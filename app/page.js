@@ -18,8 +18,6 @@ export default function Home() {
       try {
         const res = await fetch("/api/proxy");
         const data = await res.json();
-        console.log(data.body);
-
         setItems(data.body);
         setMounted(true); // 👈 Only show UI once mounted
       } catch (error) {
@@ -50,7 +48,7 @@ export default function Home() {
           )}
           {items.length > 0 && (
             <button
-              className="bg-red-500 text-white px-6 py-2 mt-4"
+              className="bg-red-500 text-white px-6 py-2 mt-4 rounded"
               onClick={() => router.push("/checkout")}
             >
               CHECKOUT

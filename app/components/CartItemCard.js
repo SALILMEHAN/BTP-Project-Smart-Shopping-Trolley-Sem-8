@@ -1,9 +1,13 @@
+import Image from "next/image";
+
 export default function CartItemCard({ item }) {
   return (
     <div className="flex gap-5 border-b border-gray-700 py-5">
-      <img
+      <Image
         src={item.imageUrl}
         alt={item.title}
+        width={100}
+        height={100}
         className="w-24 h-24 object-cover rounded-lg border border-gray-600"
       />
       <div className="flex-grow text-white">
