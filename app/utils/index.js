@@ -6,8 +6,8 @@ export const productPrices = {
 };
 
 export const productImg = {
-  Meggi: "/meggi",
-  "Lays Chips": "/lays",
-  "Parle G": "/parle",
-  "Dairy Milk": "/chocolate",
+  Meggi: "/meggi.jpg",
+  "Lays Chips": "/lays.jpg",
+  "Parle G": "/parle.jpg",
+  "Dairy Milk": "/chocolate.jpg",
 };
