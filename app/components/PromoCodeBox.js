@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import usePromoStore from "@/app/store/usePromoStore";
 
-export default function PromoCodeBox() {
+export default function PromoCodeBox({ show }) {
   const [code, setCode] = useState("");
   const { applyPromo, promoCode, discountPercent } = usePromoStore();
 
@@ -27,7 +27,7 @@ export default function PromoCodeBox() {
         </button>
       </div>
 
-      {promoCode && (
+      {show && promoCode && (
         <p className="text-green-400 text-sm">
           ✅ Promo code <strong>{promoCode}</strong> applied ({discountPercent}%
           off)

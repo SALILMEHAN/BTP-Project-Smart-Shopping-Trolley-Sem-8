@@ -15,6 +15,7 @@ export default function Home() {
   const [mounted, setMounted] = useState(false);
   const router = useRouter();
   const { discountPercent } = usePromoStore();
+  const [show, setShow] = useState(false);
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -22,6 +23,7 @@ export default function Home() {
         const res = await fetch("/api/proxy");
         const data = await res.json();
         setItems(data.body);
+        setShow(data.body.length > 0);
         setMounted(true);
       } catch (error) {
         console.error("Failed to fetch items:", error);
@@ -43,17 +45,21 @@ export default function Home() {
   return (
     <>
       <Bar />
-      <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+      <div className="relative grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
         <h1 className="text-2xl font-bold mb-6">My Shopping Cart</h1>
 
-        <div className="grid md:grid-cols-3 gap-6">
-          <div className="md:col-span-2 space-y-4">
+        <div className="grid md:grid-cols-3 gap-6 w-full">
+          <div className="md:col-span-2 space-y-4 relative">
             {items.length > 0 ? (
               items.map((item, index) => (
                 <CartItemCard key={index} item={item} />
               ))
             ) : (
-              <p className="text-gray-500">Your cart is empty.</p>
+              <div className="absolute inset-0 flex items-center justify-center bg-gray-900/80 backdrop-blur-sm z-50">
+                <p className="text-2xl text-white font-semibold">
+                  🛒 Your cart is empty.
+                </p>
+              </div>
             )}
             {items.length > 0 && (
               <button
@@ -67,7 +73,7 @@ export default function Home() {
 
           <div>
             <OrderSummary subtotal={subtotal} discount={discountAmount} />
-            <PromoCodeBox />
+            <PromoCodeBox show={show} />
             <AdBanner />
             <HelpSection />
           </div>
