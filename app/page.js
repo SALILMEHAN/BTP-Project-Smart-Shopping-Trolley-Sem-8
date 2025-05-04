@@ -86,9 +86,15 @@ export default function Home() {
         <div className="grid md:grid-cols-3 gap-6 w-full">
           <div className="md:col-span-2 space-y-4 relative">
             {items.length > 0 ? (
-              items.map((item) => (
-                <CartItemCard key={`${item.id}-${item.stock}`} item={item} />
-              ))
+              items.map((item) => {
+                const uniqueKey = item.id
+                  ? `${item.id}-${item.stock}`
+                  : `${item.title}-${item.stock}-${Math.random()
+                      .toString(36)
+                      .substr(2, 9)}`;
+
+                return <CartItemCard key={uniqueKey} item={item} />;
+              })
             ) : (
               <div className="absolute inset-0 flex items-center justify-center bg-gray-900/80 backdrop-blur-sm z-50">
                 <p className="text-2xl text-white font-semibold">
