@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import CartItemCard from "@/app/components/CartItemCard";
 import OrderSummary from "@/app/components/OrderSummary";
@@ -16,28 +16,63 @@ export default function Home() {
   const router = useRouter();
   const { discountPercent } = usePromoStore();
   const [show, setShow] = useState(false);
+  const itemsRef = useRef(items);
 
   useEffect(() => {
+    itemsRef.current = items;
+  }, [items]);
+
+  useEffect(() => {
+    const handleCheckToSetTheItems = (fetchedItems) => {
+      const currentItems = itemsRef.current;
+
+      if (fetchedItems.length !== currentItems.length) return true;
+
+      const currentItemsMap = new Map(
+        currentItems.map((item) => [item.id, item.stock])
+      );
+
+      return fetchedItems.some(
+        (item) => currentItemsMap.get(item.id) !== item.stock
+      );
+    };
+
     const fetchItems = async () => {
       try {
-        const res = await fetch("/api/proxy");
+        const res = await fetch(`/api/proxy?t=${Date.now()}`);
         const data = await res.json();
-        setItems(data.body);
-        setShow(data.body.length > 0);
-        setMounted(true);
+
+        if (handleCheckToSetTheItems(data.body)) {
+          setItems((prev) => {
+            const newItems = data.body;
+
+            // Create new array with updated item references
+            return newItems.map((newItem, index) => {
+              const oldItem = prev[index];
+              // Only create new object if stock changed
+              return oldItem && oldItem.stock === newItem.stock
+                ? oldItem
+                : { ...newItem };
+            });
+          });
+          setShow(data.body.length > 0);
+        }
       } catch (error) {
         console.error("Failed to fetch items:", error);
-        setMounted(true);
+      } finally {
+        if (!mounted) setMounted(true);
       }
     };
 
     fetchItems();
+    const intervalId = setInterval(fetchItems, 3000);
+    return () => clearInterval(intervalId);
   }, []);
 
-  const subtotal = Array.isArray(items)
-    ? items.reduce((acc, item) => acc + item.price * item.stock, 0)
-    : 0;
-
+  const subtotal = items.reduce(
+    (acc, item) => acc + item.price * item.stock,
+    0
+  );
   const discountAmount = (subtotal * discountPercent) / 100;
 
   if (!mounted) return null;
@@ -51,9 +86,15 @@ export default function Home() {
         <div className="grid md:grid-cols-3 gap-6 w-full">
           <div className="md:col-span-2 space-y-4 relative">
             {items.length > 0 ? (
-              items.map((item, index) => (
-                <CartItemCard key={index} item={item} />
-              ))
+              items.map((item) => {
+                const uniqueKey = item.id
+                  ? `${item.id}-${item.stock}`
+                  : `${item.title}-${item.stock}-${Math.random()
+                      .toString(36)
+                      .substr(2, 9)}`;
+
+                return <CartItemCard key={uniqueKey} item={item} />;
+              })
             ) : (
               <div className="absolute inset-0 flex items-center justify-center bg-gray-900/80 backdrop-blur-sm z-50">
                 <p className="text-2xl text-white font-semibold">
