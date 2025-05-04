@@ -3,9 +3,17 @@ import { Products } from "@/app/lib/Models/productSchema";
 import { NextResponse } from "next/server";
 import { productPrices, productImg } from "@/app/utils";
 
+const Token = process.env.TOKEN;
+
 export async function POST(req) {
-  const { item } = await req.json();
+  const { item, token } = await req.json();
   try {
+    if (token != Token) {
+      return NextResponse.json({
+        message: "Unauthorized Token",
+        success: false,
+      });
+    }
     await connectToDB();
     const Product = await Products.find({ title: item });
     if (Product.length == 0) {
