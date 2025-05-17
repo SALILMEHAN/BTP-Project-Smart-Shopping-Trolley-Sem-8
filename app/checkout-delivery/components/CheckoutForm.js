@@ -1,67 +1,137 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import VirtualKeyboard from "../../components/Keyboard"; // Import your keyboard component
 
 export default function CheckoutForm() {
   const [isLoading, setIsLoading] = useState(false);
+  const [showKeyboard, setShowKeyboard] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    address: "",
+    city: "",
+    postalCode: "",
+  });
+  const formRef = useRef(null);
   const router = useRouter();
 
+  // Handle form input changes
+  const handleInputChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsLoading(true);
+    setShowKeyboard(false);
 
     // Simulate order placement delay
     setTimeout(() => {
       router.push("/success");
-    }, 2000); // 2 seconds loader
+    }, 2000);
   };
 
+  // Keyboard visibility control
+  useEffect(() => {
+    const handleFocus = () => setShowKeyboard(true);
+    const handleBlur = () => setShowKeyboard(false);
+
+    const form = formRef.current;
+    if (form) {
+      const inputs = form.querySelectorAll("input");
+      inputs.forEach((input) => {
+        input.addEventListener("focus", handleFocus);
+        input.addEventListener("blur", handleBlur);
+      });
+
+      return () => {
+        inputs.forEach((input) => {
+          input.removeEventListener("focus", handleFocus);
+          input.removeEventListener("blur", handleBlur);
+        });
+      };
+    }
+  }, []);
+
   return (
-    <form
-      className="bg-gray-800 p-6 rounded-lg shadow-lg space-y-4"
-      onSubmit={handleSubmit}
-    >
-      <h2 className="text-xl font-semibold mb-2">Shipping Details</h2>
-
-      <input
-        type="text"
-        placeholder="Full Name"
-        className="w-full p-2 rounded bg-gray-700 border border-gray-600 text-white"
-        required
-      />
-      <input
-        type="email"
-        placeholder="Email Address"
-        className="w-full p-2 rounded bg-gray-700 border border-gray-600 text-white"
-        required
-      />
-      <input
-        type="text"
-        placeholder="Address"
-        className="w-full p-2 rounded bg-gray-700 border border-gray-600 text-white"
-        required
-      />
-      <input
-        type="text"
-        placeholder="City"
-        className="w-full p-2 rounded bg-gray-700 border border-gray-600 text-white"
-        required
-      />
-      <input
-        type="text"
-        placeholder="Postal Code"
-        className="w-full p-2 rounded bg-gray-700 border border-gray-600 text-white"
-        required
-      />
-
-      <button
-        type="submit"
-        className="w-full bg-blue-600 hover:bg-blue-700 transition py-2 rounded text-white font-bold"
-        disabled={isLoading}
+    <div className="relative">
+      <form
+        ref={formRef}
+        className="bg-gray-800 p-6 rounded-lg shadow-lg space-y-4"
+        onSubmit={handleSubmit}
       >
-        {isLoading ? "Placing Order..." : "Place Order"}
-      </button>
-    </form>
+        <h2 className="text-xl font-semibold mb-2">Shipping Details</h2>
+
+        <input
+          type="text"
+          name="name"
+          placeholder="Full Name"
+          value={formData.name}
+          onChange={handleInputChange}
+          className="w-full p-2 rounded bg-gray-700 border border-gray-600 text-white"
+          required
+          autoComplete="off"
+        />
+        <input
+          type="email"
+          name="email"
+          placeholder="Email Address"
+          value={formData.email}
+          onChange={handleInputChange}
+          className="w-full p-2 rounded bg-gray-700 border border-gray-600 text-white"
+          required
+          autoComplete="off"
+        />
+        <input
+          type="text"
+          name="address"
+          placeholder="Address"
+          value={formData.address}
+          onChange={handleInputChange}
+          className="w-full p-2 rounded bg-gray-700 border border-gray-600 text-white"
+          required
+          autoComplete="off"
+        />
+        <input
+          type="text"
+          name="city"
+          placeholder="City"
+          value={formData.city}
+          onChange={handleInputChange}
+          className="w-full p-2 rounded bg-gray-700 border border-gray-600 text-white"
+          required
+          autoComplete="off"
+        />
+        <input
+          type="text"
+          name="postalCode"
+          placeholder="Postal Code"
+          value={formData.postalCode}
+          onChange={handleInputChange}
+          className="w-full p-2 rounded bg-gray-700 border border-gray-600 text-white"
+          required
+          autoComplete="off"
+        />
+
+        <button
+          type="submit"
+          className="w-full bg-blue-600 hover:bg-blue-700 transition py-2 rounded text-white font-bold"
+          disabled={isLoading}
+        >
+          {isLoading ? "Placing Order..." : "Place Order"}
+        </button>
+      </form>
+
+      <VirtualKeyboard
+        show={showKeyboard}
+        onHide={() => setShowKeyboard(false)}
+      />
+    </div>
   );
 }
