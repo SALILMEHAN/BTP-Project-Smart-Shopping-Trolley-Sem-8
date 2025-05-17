@@ -20,7 +20,7 @@ const VirtualKeyboard = ({ show, onHide }) => {
   const activeElement = useRef(null);
 
   const rows = [
-    ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "="],
+    ["1", "2", "3", "4", "5", "6", "7", "8", "9", "0", "-", "@"],
     ["q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "[", "]"],
     ["a", "s", "d", "f", "g", "h", "j", "k", "l", ";", "'"],
     ["z", "x", "c", "v", "b", "n", "m", ",", ".", "/"],
@@ -41,11 +41,26 @@ const VirtualKeyboard = ({ show, onHide }) => {
     if (!activeElement.current) return;
 
     const input = activeElement.current;
-    const start = input.selectionStart || 0;
-    const end = input.selectionEnd || 0;
+    const inputType = input.type;
+
+    // Define supported input types
+    const isSupportedType = [
+      "text",
+      "search",
+      "url",
+      "tel",
+      "textarea",
+    ].includes(inputType);
+
+    // Always use end of input for unsupported types
+    const start = isSupportedType
+      ? input.selectionStart || 0
+      : input.value.length;
+    const end = isSupportedType ? input.selectionEnd || 0 : input.value.length;
+
     let newValue = input.value;
 
-    // Key handling logic
+    // Handle key actions
     if (key === "Backspace") {
       newValue =
         newValue.slice(0, Math.max(0, start - 1)) + newValue.slice(end);
@@ -65,13 +80,15 @@ const VirtualKeyboard = ({ show, onHide }) => {
     input.dispatchEvent(new Event("input", { bubbles: true }));
     input.dispatchEvent(new Event("change", { bubbles: true }));
 
-    // Maintain cursor position
-    const newPosition =
-      key === "Backspace" ? Math.max(0, start - 1) : start + 1;
-    requestAnimationFrame(() => {
-      input.selectionStart = newPosition;
-      input.selectionEnd = newPosition;
-    });
+    // Only set selection for supported types
+    if (isSupportedType) {
+      const newPosition =
+        key === "Backspace" ? Math.max(0, start - 1) : start + 1;
+      requestAnimationFrame(() => {
+        input.selectionStart = newPosition;
+        input.selectionEnd = newPosition;
+      });
+    }
   };
 
   if (!show) return null;
@@ -90,7 +107,7 @@ const VirtualKeyboard = ({ show, onHide }) => {
                 }}
                 className="bg-white hover:bg-gray-200 text-gray-800 font-semibold py-2 px-3 border border-gray-400 rounded shadow mx-0.5"
               >
-                {capsLock ? key.toUpperCase() : key}
+                {key === "@" ? "@" : capsLock ? key.toUpperCase() : key}
               </button>
             ))}
             {i === 3 && (

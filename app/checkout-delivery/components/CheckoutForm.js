@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import VirtualKeyboard from "../../components/Keyboard"; // Import your keyboard component
+import VirtualKeyboard from "../../components/Keyboard";
 
 export default function CheckoutForm() {
   const [isLoading, setIsLoading] = useState(false);
@@ -42,6 +42,13 @@ export default function CheckoutForm() {
     const handleFocus = () => setShowKeyboard(true);
     const handleBlur = () => setShowKeyboard(false);
 
+    // Add email input specific handling
+    const handleEmailFocus = (e) => {
+      if (e.target.type === "email") {
+        e.target.setAttribute("inputmode", "text");
+      }
+    };
+
     const form = formRef.current;
     if (form) {
       const inputs = form.querySelectorAll("input");
@@ -50,11 +57,15 @@ export default function CheckoutForm() {
         input.addEventListener("blur", handleBlur);
       });
 
+      // Add email input listener
+      form.addEventListener("focusin", handleEmailFocus);
+
       return () => {
         inputs.forEach((input) => {
           input.removeEventListener("focus", handleFocus);
           input.removeEventListener("blur", handleBlur);
         });
+        form.removeEventListener("focusin", handleEmailFocus);
       };
     }
   }, []);
