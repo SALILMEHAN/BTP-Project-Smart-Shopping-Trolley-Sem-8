@@ -105,7 +105,7 @@ export default function Home() {
             {items.length > 0 && (
               <button
                 className="bg-red-500 text-white px-6 py-2 mt-4 rounded"
-                onClick={() => router.push("/checkout")}
+                onClick={() => router.push("/checkout-choice")}
               >
                 CHECKOUT
               </button>

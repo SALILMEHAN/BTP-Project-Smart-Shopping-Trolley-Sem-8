@@ -16,7 +16,24 @@ export default function SuccessPage() {
       router.push("/");
     }, 10000);
 
-    const response = fetch("/api/proxy2");
+    // ✅ Proper DELETE call to proxy
+    const deletePurchase = async () => {
+      try {
+        const res = await fetch("/api/proxy2", {
+          method: "DELETE",
+        });
+
+        if (!res.ok) {
+          console.error("Delete failed:", await res.json());
+        } else {
+          console.log("Delete successful");
+        }
+      } catch (error) {
+        console.error("Delete request error:", error);
+      }
+    };
+
+    deletePurchase();
 
     return () => {
       clearInterval(interval);
@@ -31,18 +48,15 @@ export default function SuccessPage() {
 
       {/* Ring loader */}
       <div className="relative w-24 h-24">
-        <svg
-          className="w-full h-full transform" // Rotate to start from top
-          viewBox="0 0 36 36"
-        >
+        <svg className="w-full h-full transform" viewBox="0 0 36 36">
           <path
             className="text-gray-700"
             stroke="currentColor"
             strokeWidth="4"
             fill="none"
             d="M18 2.0845
-       a 15.9155 15.9155 0 0 1 0 31.831
-       a 15.9155 15.9155 0 0 1 0 -31.831"
+             a 15.9155 15.9155 0 0 1 0 31.831
+             a 15.9155 15.9155 0 0 1 0 -31.831"
           />
           <path
             className="text-green-500 transition-all duration-1000"
@@ -51,8 +65,8 @@ export default function SuccessPage() {
             fill="none"
             strokeLinecap="round"
             d="M18 2.0845
-       a 15.9155 15.9155 0 0 1 0 31.831
-       a 15.9155 15.9155 0 0 1 0 -31.831"
+             a 15.9155 15.9155 0 0 1 0 31.831
+             a 15.9155 15.9155 0 0 1 0 -31.831"
             strokeDasharray="100"
             strokeDashoffset={`${(10 - secondsLeft) * 10}`}
           />
