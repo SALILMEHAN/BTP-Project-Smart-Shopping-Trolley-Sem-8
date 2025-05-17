@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import usePromoStore from "@/app/store/usePromoStore";
 
 export default function SuccessPage() {
   const [secondsLeft, setSecondsLeft] = useState(10);
   const router = useRouter();
+  const { applyPromo } = usePromoStore();
 
   useEffect(() => {
     const interval = setInterval(() => {
@@ -34,6 +36,7 @@ export default function SuccessPage() {
     };
 
     deletePurchase();
+    applyPromo("");
 
     return () => {
       clearInterval(interval);
