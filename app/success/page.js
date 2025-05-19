@@ -46,7 +46,7 @@ export default function SuccessPage() {
 
   return (
     <div className="min-h-screen bg-gray-900 text-white flex flex-col items-center justify-center space-y-8">
-      <h1 className="text-4xl font-bold">🎉 Order Placed Successfully!</h1>
+      <h1 className="text-4xl font-bold">Order Placed Successfully!</h1>
       <p className="text-lg">Redirecting to Home in {secondsLeft} seconds...</p>
 
       {/* Ring loader */}

@@ -80,7 +80,7 @@ export default function Home() {
   return (
     <>
       <Bar />
-      <div className="relative grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
+      <div className="relative grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 bg-[#0f172a] sm:p-20 font-[family-name:var(--font-geist-sans)]">
         <h1 className="text-2xl font-bold mb-6">My Shopping Cart</h1>
 
         <div className="grid md:grid-cols-3 gap-6 w-full">
